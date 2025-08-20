@@ -1,30 +1,29 @@
 <!DOCTYPE html>
 <html>
   <head>
+    <title>Street View Game</title>
     <style>
-      /* Cover the top-left Google info box */
-      .hide-infobox {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 250px;   /* adjust width */
-        height: 80px;   /* adjust height */
-        background: white; /* or transparent if you just want to block clicks */
-        z-index: 9999;
-      }
-      iframe {
-        width: 100%;
-        height: 100vh;
-        border: none;
-      }
+      html, body { height: 100%; margin: 0; padding: 0; }
+      #street-view { height: 100%; }
     </style>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAAg-a0SVlHjQ3tQPwOr_pulq3zSwqeGPE"></script>
+    <script>
+      function initialize() {
+        const location = {lat: 57.7210, lng: 12.9390}; // starting coordinates
+
+        const panorama = new google.maps.StreetViewPanorama(
+          document.getElementById("street-view"),
+          {
+            position: location,
+            pov: { heading: 0, pitch: 0 },
+            disableDefaultUI: true,
+          }
+        );
+      }
+      window.onload = initialize;
+    </script>
   </head>
   <body>
-    <div class="hide-infobox"></div>
-    <iframe 
-      src="https://www.google.com/maps/embed?pb=!4v1755713447157!6m8!1m7!1sIu3ycZQFVKnzMgddDJ1WKA!2m2!1d57.73794513390704!2d12.9008980345448!3f350.6089564465448!4f-20.841273577970753!5f0.7820865974627469&maptype=none&layer=c&disableDefaultUI=true" 
-      allowfullscreen="" 
-      loading="lazy">
-    </iframe>
+    <div id="street-view"></div>
   </body>
 </html>
