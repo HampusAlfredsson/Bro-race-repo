@@ -1,40 +1,30 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Street View Game</title>
-  <style>
-    html, body {
-      height: 100%;
-      margin: 0;
-      padding: 0;
-    }
-    #street-view {
-      height: 100%;
-      width: 100%;
-    }
-  </style>
-  <!-- Load Google Maps JS API with your key -->
-  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDIEFxmiG9S4F1ASBteskK572WmbaZYv3E"></script>
-  <script>
-    function initialize() {
-      const location = { lat: 57.737910, lng: 12.900904 }; // your coordinates
+<html>
+  <head>
+    <title>Street View Game</title>
+    <style>
+      html, body { height: 100%; margin: 0; padding: 0; }
+      #street-view { height: 100%; }
+    </style>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDIEFxmiG9S4F1ASBteskK572WmbaZYv3E"></script>
+    <script>
+      function initialize() {
+        const location = {lat: 57.737910, lng: 12.900904}; // Example coordinates
 
-      const panorama = new google.maps.StreetViewPanorama(
-        document.getElementById("street-view"),
-        {
-          position: location,
-          pov: { heading: 0, pitch: 0 },
-          zoom: 1,
-          disableDefaultUI: true
-        }
-      );
-    }
-    window.onload = initialize;
-  </script>
-</head>
-<body>
-  <div id="street-view"></div>
-</body>
+        const panorama = new google.maps.StreetViewPanorama(
+          document.getElementById("street-view"),
+          {
+            position: location,
+            pov: { heading: 0, pitch: 0 },
+            disableDefaultUI: true,
+            showRoadLabels: false, // hides road overlays
+          }
+        );
+      }
+      window.onload = initialize;
+    </script>
+  </head>
+  <body>
+    <div id="street-view"></div>
+  </body>
 </html>
