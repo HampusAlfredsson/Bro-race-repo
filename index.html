@@ -1,30 +1,37 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <title>Street View Game</title>
-    <style>
-      html, body { height: 100%; margin: 0; padding: 0; }
-      #street-view { height: 100%; }
-    </style>
-    <script src="https://maps.googleapis.com/maps/api/js?key=API_KEY"></script>
-    <script>
-      function initialize() {
-        const location = {lat: 57.737910, lng: 12.900904}; // Example coordinates
+<head>
+  <meta charset="utf-8">
+  <title>Street View Game</title>
+  <style>
+    html, body { height: 100%; margin: 0; padding: 0; }
+    #street-view { height: 100%; width: 100%; }
+  </style>
+  <!-- Replace YOUR_API_KEY with your restricted Maps JS API key -->
+  <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY"></script>
+  <script>
+    function initialize() {
+      const location = {lat: 57.737910, lng: 12.900904};
 
-        const panorama = new google.maps.StreetViewPanorama(
-          document.getElementById("street-view"),
-          {
-            position: location,
-            pov: { heading: 0, pitch: 0 },
-            disableDefaultUI: true,
-            showRoadLabels: false, // hides road overlays
-          }
-        );
-      }
-      window.onload = initialize;
-    </script>
-  </head>
-  <body>
-    <div id="street-view"></div>
-  </body>
+      // Create Street View panorama
+      const panorama = new google.maps.StreetViewPanorama(
+        document.getElementById("street-view"), {
+          position: location,
+          pov: { heading: 0, pitch: 0 },
+          disableDefaultUI: true,     // hides all default controls
+          linksControl: false,        // prevents moving far away
+          panControl: false,
+          zoomControl: false,
+          fullscreenControl: false,
+          showRoadLabels: false       // hides street labels
+        }
+      );
+    }
+
+    window.onload = initialize;
+  </script>
+</head>
+<body>
+  <div id="street-view"></div>
+</body>
 </html>
