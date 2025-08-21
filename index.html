@@ -13,7 +13,7 @@
       width: 100%;
       overflow: hidden;
       font-family: sans-serif;
-      background-color: #333; /* A background for behind the elements */
+      background-color: #333;
     }
 
     #app {
@@ -33,9 +33,8 @@
       z-index: 1;
     }
 
-    /* Mini preview box in the bottom right */
     .mini {
-      width: 25vw !important; /* Use viewport units for better scaling */
+      width: 25vw !important;
       height: 25vh !important;
       max-width: 250px;
       max-height: 200px;
@@ -45,7 +44,7 @@
       left: auto !important;
       border: 3px solid white;
       border-radius: 8px;
-      z-index: 10 !important; /* Ensure mini view is always on top */
+      z-index: 10 !important;
       cursor: pointer;
     }
 
@@ -59,34 +58,62 @@
       border: none;
     }
     
-    /* Overlays to hide Google's UI elements */
     .hide-google-ui {
       position: absolute;
-      background: #222; /* Use a dark color that blends with the UI */
+      background: #222;
       z-index: 2;
-      pointer-events: none; /* Let clicks pass through to the iframe */
+      pointer-events: none;
+    }
+
+    /* FIX #2: New overlay for the top-left info box */
+    #hide-top-left {
+      top: 15px;
+      left: 15px;
+      width: 300px; /* Adjust if needed */
+      height: 100px; /* Adjust if needed */
+      border-radius: 8px;
     }
 
     #hide-bottom-left {
-        bottom: 0;
-        left: 0;
-        width: 300px;
-        height: 40px;
+      bottom: 0;
+      left: 0;
+      width: 300px;
+      height: 40px;
     }
 
     #hide-bottom-right {
-        bottom: 0;
-        right: 0;
-        width: 150px;
-        height: 20px;
+      bottom: 0;
+      right: 0;
+      width: 150px;
+      height: 20px;
+    }
+    
+    /* FIX #1: Transparent overlay to capture clicks on the mini Street View */
+    .click-guard {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 3; /* Must be higher than iframe's content */
+        display: none; /* Hidden by default */
+    }
+
+    /* Show the click guard ONLY when streetview is mini */
+    #streetview.mini .click-guard {
+        display: block;
     }
   </style>
 </head>
 <body>
   <div id="app">
     <div id="streetview" class="view">
+      <div id="hide-top-left" class="hide-google-ui"></div>
       <div id="hide-bottom-left" class="hide-google-ui"></div>
       <div id="hide-bottom-right" class="hide-google-ui"></div>
+      
+      <div class="click-guard"></div>
+      
       <iframe id="streetview-iframe"
         allowfullscreen
         loading="lazy"
@@ -99,10 +126,9 @@
 
   <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
   <script>
-    // --- STEP 1: PASTE YOUR GENERATED GOOGLE MAPS EMBED URL HERE ---
-    const streetViewEmbedUrl = 'https://www.google.com/maps/embed?pb=!4v1755763385379!6m8!1m7!1sIu3ycZQFVKnzMgddDJ1WKA!2m2!1d57.73794513390704!2d12.9008980345448!3f41.224308291320945!4f-5.624768933514886!5f0.7820865974627469';
+    // Paste the URL you generate from Google Maps > Share > Embed a map
+    const streetViewEmbedUrl = 'PASTE_YOUR_URL_HERE';
 
-    // --- SCRIPT LOGIC ---
     const streetviewIframe = document.getElementById('streetview-iframe');
     streetviewIframe.src = streetViewEmbedUrl;
 
