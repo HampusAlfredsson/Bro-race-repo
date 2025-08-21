@@ -1,37 +1,54 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <meta charset="utf-8">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Street View Game</title>
   <style>
-    html, body { height: 100%; margin: 0; padding: 0; }
-    #street-view { height: 100%; width: 100%; }
-  </style>
-  <!-- Replace YOUR_API_KEY with your restricted Maps JS API key -->
-  <script src="https://maps.googleapis.com/maps/api/js?key=API_KEY"></script>
-  <script>
-    function initialize() {
-      const location = {lat: 57.737910, lng: 12.900904};
-
-      // Create Street View panorama
-      const panorama = new google.maps.StreetViewPanorama(
-        document.getElementById("street-view"), {
-          position: location,
-          pov: { heading: 0, pitch: 0 },
-          disableDefaultUI: true,     // hides all default controls
-          linksControl: false,        // prevents moving far away
-          panControl: false,
-          zoomControl: false,
-          fullscreenControl: false,
-          showRoadLabels: false       // hides street labels
-        }
-      );
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      width: 100%;
+      overflow: hidden;
     }
 
-    window.onload = initialize;
-  </script>
+    iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+      /* Step 2: reduce rendering load on mobile */
+      image-rendering: pixelated;
+    }
+
+    /* Step 3: avoid overloading weak phones */
+    @media (max-width: 600px) {
+      iframe {
+        max-height: 80vh; /* don’t force fullscreen on small devices */
+      }
+    }
+
+    /* Step 1: cover Google info box (optional) */
+    .hide-infobox {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 250px;   /* adjust width */
+      height: 80px;   /* adjust height */
+      background: white;
+      z-index: 9999;
+    }
+  </style>
 </head>
 <body>
-  <div id="street-view"></div>
+  <div class="hide-infobox"></div>
+
+  <!-- Your Street View embed -->
+  <iframe 
+    src="https://www.google.com/maps/embed?pb=!4v1755759610132!6m8!1m7!1sIu3ycZQFVKnzMgddDJ1WKA!2m2!1d57.73794513390704!2d12.9008980345448!3f94.34701!4f0!5f0.7820865974627469"
+    allowfullscreen
+    loading="lazy"
+    referrerpolicy="no-referrer-when-downgrade">
+  </iframe>
 </body>
 </html>
