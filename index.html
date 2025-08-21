@@ -51,7 +51,7 @@
       image-rendering: pixelated;
     }
 
-    /* Hide Google info box */
+    /* White overlay to hide Google's "View on Maps" */
     .hide-infobox {
       position: absolute;
       top: 0;
@@ -60,12 +60,7 @@
       height: 80px;
       background: white;
       z-index: 3;
-      pointer-events: auto;
-    }
-
-    /* When Street View is mini, disable infobox */
-    .mini .hide-infobox {
-      display: none;
+      pointer-events: none; /* <-- lets clicks go through */
     }
   </style>
 </head>
@@ -104,21 +99,9 @@
 
     function swapViews() {
       if (streetview.classList.contains("mini")) {
+        // make streetview big again
         streetview.classList.remove("mini");
         worldmap.classList.add("mini");
+        setTimeout(() => map.invalidateSize(), 310); // fix Leaflet resizing
       } else {
-        worldmap.classList.remove("mini");
-        streetview.classList.add("mini");
-      }
-    }
-
-    streetview.addEventListener("click", () => {
-      if (streetview.classList.contains("mini")) swapViews();
-    });
-
-    worldmap.addEventListener("click", () => {
-      if (worldmap.classList.contains("mini")) swapViews();
-    });
-  </script>
-</body>
-</html>
+        //
