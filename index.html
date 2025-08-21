@@ -15,7 +15,6 @@
       font-family: sans-serif;
     }
 
-    /* Container that holds both views */
     #app {
       position: relative;
       width: 100%;
@@ -29,20 +28,19 @@
       width: 100%;
       height: 100%;
       transition: all 0.3s ease;
-      z-index: 1;
     }
 
-    /* Mini preview style */
+    /* Mini preview box */
     .mini {
-      width: 200px;
-      height: 150px;
+      width: 200px !important;
+      height: 150px !important;
       bottom: 10px;
       right: 10px;
-      top: auto;
-      left: auto;
+      top: auto !important;
+      left: auto !important;
       border: 2px solid #333;
       border-radius: 8px;
-      z-index: 2;
+      z-index: 2 !important;
       cursor: pointer;
     }
 
@@ -53,7 +51,7 @@
       image-rendering: pixelated;
     }
 
-    /* Hide Google info box overlay */
+    /* Hide Google info box */
     .hide-infobox {
       position: absolute;
       top: 0;
@@ -62,7 +60,12 @@
       height: 80px;
       background: white;
       z-index: 3;
-      pointer-events: none;
+      pointer-events: auto;
+    }
+
+    /* When Street View is mini, disable infobox */
+    .mini .hide-infobox {
+      display: none;
     }
   </style>
 </head>
@@ -89,14 +92,13 @@
     const map = L.map("map", {
       zoomControl: true,
       attributionControl: true,
-    }).setView([20, 0], 2); // world view
+    }).setView([20, 0], 2);
 
     L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
       maxZoom: 19,
       attribution: "&copy; OpenStreetMap contributors"
     }).addTo(map);
 
-    // Toggle logic
     const streetview = document.getElementById("streetview");
     const worldmap = document.getElementById("map");
 
