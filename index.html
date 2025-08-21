@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Street View Game</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
   <style>
     html, body {
       margin: 0;
@@ -11,44 +12,111 @@
       height: 100%;
       width: 100%;
       overflow: hidden;
+      font-family: sans-serif;
+    }
+
+    /* Container that holds both views */
+    #app {
+      position: relative;
+      width: 100%;
+      height: 100%;
+    }
+
+    .view {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      transition: all 0.3s ease;
+      z-index: 1;
+    }
+
+    /* Mini preview style */
+    .mini {
+      width: 200px;
+      height: 150px;
+      bottom: 10px;
+      right: 10px;
+      top: auto;
+      left: auto;
+      border: 2px solid #333;
+      border-radius: 8px;
+      z-index: 2;
+      cursor: pointer;
     }
 
     iframe {
       width: 100%;
       height: 100%;
       border: none;
-      /* Step 2: reduce rendering load on mobile */
       image-rendering: pixelated;
     }
 
-    /* Step 3: avoid overloading weak phones */
-    @media (max-width: 600px) {
-      iframe {
-        max-height: 80vh; /* don’t force fullscreen on small devices */
-      }
-    }
-
-    /* Step 1: cover Google info box (optional) */
+    /* Hide Google info box overlay */
     .hide-infobox {
       position: absolute;
       top: 0;
       left: 0;
-      width: 250px;   /* adjust width */
-      height: 80px;   /* adjust height */
+      width: 250px;
+      height: 80px;
       background: white;
-      z-index: 9999;
+      z-index: 3;
+      pointer-events: none;
     }
   </style>
 </head>
 <body>
-  <div class="hide-infobox"></div>
+  <div id="app">
+    <!-- Street View -->
+    <div id="streetview" class="view">
+      <div class="hide-infobox"></div>
+      <iframe
+        src="https://www.google.com/maps/embed?pb=!4v1755759610132!6m8!1m7!1sIu3ycZQFVKnzMgddDJ1WKA!2m2!1d57.73794513390704!2d12.9008980345448!3f94.34701!4f0!5f0.7820865974627469"
+        allowfullscreen
+        loading="lazy"
+        referrerpolicy="no-referrer-when-downgrade">
+      </iframe>
+    </div>
 
-  <!-- Your Street View embed -->
-  <iframe 
-    src="https://www.google.com/maps/embed?pb=!4v1755759610132!6m8!1m7!1sIu3ycZQFVKnzMgddDJ1WKA!2m2!1d57.73794513390704!2d12.9008980345448!3f94.34701!4f0!5f0.7820865974627469"
-    allowfullscreen
-    loading="lazy"
-    referrerpolicy="no-referrer-when-downgrade">
-  </iframe>
+    <!-- World Map -->
+    <div id="map" class="view mini"></div>
+  </div>
+
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <script>
+    // Initialize Leaflet map
+    const map = L.map("map", {
+      zoomControl: true,
+      attributionControl: true,
+    }).setView([20, 0], 2); // world view
+
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      maxZoom: 19,
+      attribution: "&copy; OpenStreetMap contributors"
+    }).addTo(map);
+
+    // Toggle logic
+    const streetview = document.getElementById("streetview");
+    const worldmap = document.getElementById("map");
+
+    function swapViews() {
+      if (streetview.classList.contains("mini")) {
+        streetview.classList.remove("mini");
+        worldmap.classList.add("mini");
+      } else {
+        worldmap.classList.remove("mini");
+        streetview.classList.add("mini");
+      }
+    }
+
+    streetview.addEventListener("click", () => {
+      if (streetview.classList.contains("mini")) swapViews();
+    });
+
+    worldmap.addEventListener("click", () => {
+      if (worldmap.classList.contains("mini")) swapViews();
+    });
+  </script>
 </body>
 </html>
