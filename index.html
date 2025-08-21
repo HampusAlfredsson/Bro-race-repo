@@ -1,120 +1,137 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Street View + Map Toggle</title>
-<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
-<style>
-html, body {
-  margin: 0;
-  padding: 0;
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
-}
-#app {
-  position: relative;
-  width: 100%;
-  height: 100%;
-}
-.view {
-  position: absolute;
-  top: 0; left: 0;
-  width: 100%;
-  height: 100%;
-  transition: all 0.3s ease;
-}
-.mini {
-  width: 200px !important;
-  height: 150px !important;
-  bottom: 10px;
-  right: 10px;
-  top: auto !important;
-  left: auto !important;
-  z-index: 2;
-  cursor: pointer;
-  border: 2px solid #333;
-  border-radius: 8px;
-}
-iframe {
-  width: 100%;
-  height: 100%;
-  border: none;
-}
-.hide-infobox {
-  position: absolute;
-  top: 0; left: 0;
-  width: 250px;
-  height: 80px;
-  background: white;
-  z-index: 3;
-  pointer-events: none;
-}
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Geo-Competition Game</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      width: 100%;
+      overflow: hidden;
+      font-family: sans-serif;
+      background-color: #333; /* A background for behind the elements */
+    }
+
+    #app {
+      position: relative;
+      width: 100%;
+      height: 100%;
+    }
+
+    .view {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+      box-shadow: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
+      z-index: 1;
+    }
+
+    /* Mini preview box in the bottom right */
+    .mini {
+      width: 25vw !important; /* Use viewport units for better scaling */
+      height: 25vh !important;
+      max-width: 250px;
+      max-height: 200px;
+      bottom: 15px;
+      right: 15px;
+      top: auto !important;
+      left: auto !important;
+      border: 3px solid white;
+      border-radius: 8px;
+      z-index: 10 !important; /* Ensure mini view is always on top */
+      cursor: pointer;
+    }
+
+    #streetview {
+      background-color: #000;
+    }
+
+    iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+    
+    /* Overlays to hide Google's UI elements */
+    .hide-google-ui {
+      position: absolute;
+      background: #222; /* Use a dark color that blends with the UI */
+      z-index: 2;
+      pointer-events: none; /* Let clicks pass through to the iframe */
+    }
+
+    #hide-bottom-left {
+        bottom: 0;
+        left: 0;
+        width: 300px;
+        height: 40px;
+    }
+
+    #hide-bottom-right {
+        bottom: 0;
+        right: 0;
+        width: 150px;
+        height: 20px;
+    }
+  </style>
 </head>
 <body>
-<div id="app">
-  <!-- Street View -->
-  <div id="streetview" class="view">
-    <div class="hide-infobox"></div>
-    <iframe
-      src="https://www.google.com/maps/embed?pb=!4v1755759610132!6m8!1m7!1sIu3ycZQFVKnzMgddDJ1WKA!2m2!1d57.73794513390704!2d12.9008980345448!3f94.34701!4f0!5f0.7820865974627469"
-      allowfullscreen
-      loading="lazy"
-      referrerpolicy="no-referrer-when-downgrade">
-    </iframe>
+  <div id="app">
+    <div id="streetview" class="view">
+      <div id="hide-bottom-left" class="hide-google-ui"></div>
+      <div id="hide-bottom-right" class="hide-google-ui"></div>
+      <iframe id="streetview-iframe"
+        allowfullscreen
+        loading="lazy"
+        referrerpolicy="no-referrer-when-downgrade">
+      </iframe>
+    </div>
+
+    <div id="map" class="view mini"></div>
   </div>
 
-  <!-- World Map -->
-  <div id="map" class="view mini"></div>
-</div>
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <script>
+    // --- STEP 1: PASTE YOUR GENERATED GOOGLE MAPS EMBED URL HERE ---
+    const streetViewEmbedUrl = 'https://www.google.com/maps/embed?pb=!4v1755763385379!6m8!1m7!1sIu3ycZQFVKnzMgddDJ1WKA!2m2!1d57.73794513390704!2d12.9008980345448!3f41.224308291320945!4f-5.624768933514886!5f0.7820865974627469';
 
-<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-<script>
-const streetview = document.getElementById("streetview");
-const worldmap = document.getElementById("map");
+    // --- SCRIPT LOGIC ---
+    const streetviewIframe = document.getElementById('streetview-iframe');
+    streetviewIframe.src = streetViewEmbedUrl;
 
-// Initialize Leaflet
-const map = L.map('map', { zoomControl: true }).setView([20,0], 2);
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-  maxZoom: 19,
-  attribution: '&copy; OpenStreetMap contributors'
-}).addTo(map);
+    const map = L.map("map", {
+      zoomControl: true,
+      attributionControl: true,
+    }).setView([20, 0], 2);
 
-// Store map state
-let mapState = { center: map.getCenter(), zoom: map.getZoom() };
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      maxZoom: 19,
+      attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+    }).addTo(map);
 
-// Toggle function
-function toggleFocus() {
-  const streetIsMini = streetview.classList.contains('mini');
+    const streetviewContainer = document.getElementById("streetview");
+    const mapContainer = document.getElementById("map");
 
-  if (streetIsMini) {
-    // Make Street View full
-    streetview.classList.remove('mini');
-    worldmap.classList.add('mini');
+    function swapViews() {
+      streetviewContainer.classList.toggle("mini");
+      mapContainer.classList.toggle("mini");
+      setTimeout(() => map.invalidateSize(), 410);
+    }
 
-    // Store map state and shrink map
-    mapState = { center: map.getCenter(), zoom: map.getZoom() };
-    map.invalidateSize();
-  } else {
-    // Make Map full
-    worldmap.classList.remove('mini');
-    streetview.classList.add('mini');
+    streetviewContainer.addEventListener("click", () => {
+      if (streetviewContainer.classList.contains("mini")) swapViews();
+    });
 
-    // Restore map state and refresh
-    map.invalidateSize();
-    map.setView(mapState.center, mapState.zoom);
-  }
-}
-
-// Click handlers
-streetview.addEventListener('click', () => {
-  if (streetview.classList.contains('mini')) toggleFocus();
-});
-worldmap.addEventListener('click', () => {
-  if (worldmap.classList.contains('mini')) toggleFocus();
-});
-</script>
+    mapContainer.addEventListener("click", () => {
+      if (mapContainer.classList.contains("mini")) swapViews();
+    });
+  </script>
 </body>
 </html>
